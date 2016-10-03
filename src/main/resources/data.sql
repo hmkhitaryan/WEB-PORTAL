@@ -1,31 +1,10 @@
 CREATE DATABASE IF NOT EXISTS `accounts`;
 USE `accounts`;
---
--- Table structure for table `role`
---
-
-DROP TABLE IF EXISTS `role`;
-CREATE TABLE `role` (
-  `id`   INT(11) NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45)      DEFAULT NULL,
-  PRIMARY KEY (`id`)
-)
-  ENGINE = InnoDB
-  AUTO_INCREMENT = 2
-  DEFAULT CHARSET = utf8;
-
---
--- Dumping data for table `role`
---
-
-LOCK TABLES `role` WRITE;
-INSERT INTO `role` VALUES (1, 'ROLE_USER');
-UNLOCK TABLES;
 
 --
 -- Table structure for table `user`
 --
-
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id`             INT(11) NOT NULL AUTO_INCREMENT,
@@ -41,6 +20,30 @@ CREATE TABLE `user` (
   ENGINE = InnoDB
   AUTO_INCREMENT = 4
   DEFAULT CHARSET = utf8;
+SET FOREIGN_KEY_CHECKS = 1;
+
+--
+-- Table structure for table `role`
+--
+
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `role`;
+CREATE TABLE `role` (
+  `id`   INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45)      DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+  ENGINE = InnoDB
+  AUTO_INCREMENT = 2
+  DEFAULT CHARSET = utf8;
+SET FOREIGN_KEY_CHECKS = 1;
+--
+-- Dumping data for table `role`
+--
+
+LOCK TABLES `role` WRITE;
+INSERT INTO `role` VALUES (1, 'ROLE_USER');
+UNLOCK TABLES;
 
 --
 -- Table structure for table `user_role`

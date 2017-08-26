@@ -1,7 +1,7 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p"
-       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/beans
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/beans
  http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <mvc:annotation-driven/>
@@ -21,7 +21,7 @@
         <property name="maxUploadSize" value="10240000"/>
     </bean>
 
-    <bean id="domainUtils" class="com.egs.account.utils.domainUtlis.DomainUtils"/>
+	<bean id="domainUtils" class="com.egs.account.utils.domainUtils.DomainUtils"/>
 
     <bean id="localeResolver"
           class="org.springframework.web.servlet.i18n.SessionLocaleResolver">

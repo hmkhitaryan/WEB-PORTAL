@@ -3,7 +3,7 @@ package test;
 
 import com.egs.account.config.hibernate.HibernateConfiguration;
 import com.egs.account.controller.UserController;
-import com.egs.account.error.UserNotFoundException;
+import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.model.User;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
@@ -20,8 +20,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.view.InternalResourceView;
+
 import java.util.Arrays;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 

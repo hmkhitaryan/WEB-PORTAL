@@ -1,4 +1,4 @@
-package com.egs.account.utils.domainUtlis;
+package com.egs.account.utils.domainUtils;
 
 import com.egs.account.model.Catalog;
 import com.egs.account.model.FileBucket;
@@ -11,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;

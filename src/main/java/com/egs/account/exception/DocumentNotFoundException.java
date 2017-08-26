@@ -1,4 +1,4 @@
-package com.egs.account.error;
+package com.egs.account.exception;
 
 /**
  * Created by User on 20.09.2016.

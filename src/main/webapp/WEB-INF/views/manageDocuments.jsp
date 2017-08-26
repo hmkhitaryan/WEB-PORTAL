@@ -1,18 +1,28 @@
+<%@ page import="com.egs.account.mapping.UrlMapping" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<c:set var="LOGOUT_URL" value="<%=UrlMapping.LOGOUT%>"/>
+<c:set var="ADD_DOC_URL" value="<%=UrlMapping.ADD_DOCUMENT%>"/>
+<c:set var="EDIT_USER_URL" value="<%=UrlMapping.EDIT_USER%>"/>
+<c:set var="DELETE_USER_URL" value="<%=UrlMapping.DELETE_USER%>"/>
+<c:set var="DELETE_DOCUMENT_URL" value="<%=UrlMapping.DELETE_DOCUMENT%>"/>
+<c:set var="DOWNLOAD_DOCUMENT_URL" value="<%=UrlMapping.DOWNLOAD_DOCUMENT%>"/>
+<c:set var="ENGLISH_LANG_URL" value="<%=UrlMapping.ENGLISH_LANG%>"/>
+<c:set var="FRENCH_LANG_URL" value="<%=UrlMapping.FRENCH_LANG%>"/>
+
 <html>
 
 <head>
     <div class="pull-right" style="padding-right:50px">
-        <a href="?language=en" >English</a>|<a href="?language=fr" >French</a>
+        <a href="${ENGLISH_LANG_URL}">English</a>|<a href="${ENGLISH_LANG_URL}">French</a>
     </div>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Upload/Download/Delete Documents</title>
-    <link href="<c:url value='/resources/css/bootstrap.css' />" rel="stylesheet"></link>
-    <link href="<c:url value='/resources/css/app.css' />" rel="stylesheet"></link>
+    <link href="<c:url value='/resources/css/bootstrap.css' />" rel="stylesheet"/>
+    <link href="<c:url value='/resources/css/app.css' />" rel="stylesheet"/>
 </head>
 
 <body>
@@ -44,9 +54,9 @@
                         <td>${doc.type}</td>
                         <td>${doc.insertDate}</td>
                         <td>${doc.comment}</td>
-                        <td><a href="<c:url value='/download-document-${user.id}-${doc.id}' />"
+                        <td><a href="<c:url value='${DOWNLOAD_DOCUMENT_URL}/${user.id}/${doc.id}' />"
                                class="btn btn-success custom-width"><spring:message code= "button.download.label"/></a></td>
-                        <td><a href="<c:url value='/delete-document-${user.id}-${doc.id}' />"
+                        <td><a href="<c:url value='${DELETE_DOCUMENT_URL}/${user.id}/${doc.id}' />"
                                class="btn btn-danger custom-width"><spring:message code= "button.delete.label"/></a></td>
                     </tr>
                 </c:forEach>
@@ -92,7 +102,7 @@
         </div>
     </div>
     <div class="well">
-        <a href="<c:url value='/edit-user-${user.id}'/>"><spring:message code= "document.finnish.upload.text"/></a>
+        <a href="<c:url value='${EDIT_USER_URL}/${user.id}'/>"><spring:message code="document.finnish.upload.text"/></a>
     </div>
 </div>
 </body>

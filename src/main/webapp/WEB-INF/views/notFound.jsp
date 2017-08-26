@@ -1,9 +1,13 @@
+<%@ page import="com.egs.account.mapping.UrlMapping" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+
+<c:set var="LOGOUT_URL" value="<%=UrlMapping.LOGIN%>"/>
+
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/htmlcharset=ISO-8859-1">
-    <link rel="stylesheet"href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
     <title><spring:message code= "account.welcome.label"/></title>
 </head>
 <body>
@@ -18,7 +22,7 @@
 <section>
     <div class="container">
         <p>
-            <a href="<spring:url value="/login"/>"class="btn btnprimary">
+            <a href="<spring:url value="${LOGOUT_URL}"/>" class="btn btnprimary">
                 <span class="glyphicon-hand-left glyphicon"></span>
                 <spring:message code= "button.loginPage.label"/>
             </a>

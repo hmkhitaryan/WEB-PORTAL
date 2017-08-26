@@ -1,8 +1,13 @@
+<%@ page import="com.egs.account.mapping.UrlMapping" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="REGISTRATION_URL" value="<%=UrlMapping.REGISTRATION%>"/>
+<c:set var="ENGLISH_LANG_URL" value="<%=UrlMapping.ENGLISH_LANG%>"/>
+<c:set var="FRENCH_LANG_URL" value="<%=UrlMapping.FRENCH_LANG%>"/>
+<c:set var="LOGIN_URL" value="<%=UrlMapping.LOGIN%>"/>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -26,15 +31,15 @@
 
 <body>
 <div class="pull-right" style="padding-right:50px">
-    <a href="?language=en" >English</a>|<a href="?language=fr" >French</a>
+    <a href="${ENGLISH_LANG_URL}">English</a>|<a href="${FRENCH_LANG_URL}">French</a>
 </div>
 
 <div class="container">
 
-    <form method="POST" action="${contextPath}/login" class="form-signin">
+    <form method="POST" action="${contextPath}${LOGIN_URL}" class="form-signin">
         <h2 class="form-heading"><spring:message code= "button.loginPage.label"/></h2>
 
-        <div class="form-group ${error != null ? 'has-error' : ''}">
+        <div class="form-group ${error != null ? 'has-exception' : ''}">
             <span>${message}</span>
             <input name="username" type="text" class="form-control" placeholder="Username"
                    autofocus="true"/>
@@ -43,8 +48,8 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
             <button class="btn btn-lg btn-primary btn-block" type="submit"><spring:message code= "button.login.label"/></button>
-            <h4 class="text-center"><a href="${contextPath}/registration"><spring:message code= "account.create.label"/></a></h4>
-
+            <h4 class="text-center"><a href="${contextPath}${REGISTRATION_URL}"><spring:message
+                    code="account.create.label"/></a></h4>
         </div>
 
     </form>

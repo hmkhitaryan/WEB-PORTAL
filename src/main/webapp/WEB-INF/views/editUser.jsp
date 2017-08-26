@@ -1,8 +1,13 @@
+<%@ page import="com.egs.account.mapping.UrlMapping" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="LOGOUT_URL" value="<%=UrlMapping.LOGOUT%>"/>
+<c:set var="ADD_DOC_URL" value="<%=UrlMapping.ADD_DOCUMENT%>"/>
+<c:set var="ENGLISH_LANG_URL" value="<%=UrlMapping.ENGLISH_LANG%>"/>
+<c:set var="FRENCH_LANG_URL" value="<%=UrlMapping.FRENCH_LANG%>"/>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,11 +29,11 @@
 
 <body>
 <div class="pull-right" style="padding-right:50px">
-    <a href="?language=en" >English</a>|<a href="?language=fr" >French</a>
+    <a href="${ENGLISH_LANG_URL}">English</a>|<a href="${FRENCH_LANG_URL}">French</a>
 </div>
 
 <div class="container">
-    <form id="logoutForm" method="POST" action="${contextPath}/logout">
+    <form id="logoutForm" method="POST" action="${contextPath}/${LOGOUT_URL}">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 
@@ -38,44 +43,44 @@
         <spring:bind path="firstName">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <form:input type="text" path="firstName" class="form-control" placeholder="First name"
-                            autofocus="true"></form:input>
-                <form:errors path="firstName"></form:errors>
+                            autofocus="true"/>
+                <form:errors path="firstName"/>
             </div>
         </spring:bind>
 
         <spring:bind path="lastName">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <form:input type="text" path="lastName" class="form-control" placeholder="Last name"
-                            autofocus="true"></form:input>
-                <form:errors path="lastName"></form:errors>
+                            autofocus="true"/>
+                <form:errors path="lastName"/>
             </div>
         </spring:bind>
 
         <spring:bind path="email">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <form:input type="text" path="email" class="form-control" placeholder="Email"
-                            autofocus="true"></form:input>
-                <form:errors path="email"></form:errors>
+                            autofocus="true"/>
+                <form:errors path="email"/>
             </div>
         </spring:bind>
 
         <spring:bind path="skypeID">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <form:input type="text" path="skypeID" class="form-control" placeholder="Skype ID"
-                            autofocus="true"></form:input>
-                <form:errors path="skypeID"></form:errors>
+                            autofocus="true"/>
+                <form:errors path="skypeID"/>
             </div>
         </spring:bind>
 
         <spring:bind path="password">
             <div class="form-group ${status.error ? 'has-error' : ''}">
-                <form:input type="password" path="password" class="form-control" placeholder="Password"></form:input>
-                <form:errors path="password"></form:errors>
+                <form:input type="password" path="password" class="form-control" placeholder="Password"/>
+                <form:errors path="password"/>
             </div>
         </spring:bind>
 
-			<span class="well pull-left">
-				<a href="<c:url value='/add-document-${userForm.id}'/>" class="btn btn-primary btn-sm"><spring:message
+        <span class="well pull-left">
+				<a href="<c:url value='${ADD_DOC_URL}/${userForm.id}'/>" class="btn btn-primary btn-sm"><spring:message
                         code="button.upload.text"/></a>
 			</span>
 

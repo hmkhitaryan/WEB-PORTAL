@@ -1,16 +1,18 @@
 package com.egs.account.controller;
 
-import com.egs.account.error.DocumentNotFoundException;
-import com.egs.account.error.UserNotFoundException;
+import com.egs.account.exception.DocumentNotFoundException;
+import com.egs.account.exception.UserNotFoundException;
+import com.egs.account.mapping.UIAttribute;
+import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
 import com.egs.account.model.FileBucket;
 import com.egs.account.model.User;
 import com.egs.account.service.catalog.CatalogService;
+import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
-import com.egs.account.utils.domainUtlis.DomainUtils;
+import com.egs.account.utils.domainUtils.DomainUtils;
 import com.egs.account.validator.FileValidator;
 import com.egs.account.validator.UserValidator;
-import com.egs.account.service.security.SecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author Hayk_Mkhitaryan
+ */
 @Controller
 public class UserController {
 
@@ -67,126 +72,128 @@ public class UserController {
         binder.setValidator(fileValidator);
     }
 
-    @RequestMapping(value = "/registration", method = RequestMethod.GET)
+    @RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.GET)
     public String registration(Model model) {
-        model.addAttribute("userForm", new User());
+        model.addAttribute(UIAttribute.USER_FORM, new User());
 
-        return "registration";
+        return UrlMapping.REGISTRATION_DESTINATION_JSP;
     }
 
-    @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult) {
+    @RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.POST)
+    public String registration(@ModelAttribute(UIAttribute.USER_FORM) User userForm, BindingResult bindingResult) {
         userValidator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return "registration";
+            return UrlMapping.REGISTRATION_DESTINATION_JSP;
         }
         userService.saveUser(userForm);
         securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
         LOGGER.info("user with username {} successfully registered", userForm.getUsername());
 
-        return "redirect:/welcome";
+        return UrlMapping.WELCOME_REDIRECT_JSP;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = UrlMapping.LOGIN, method = RequestMethod.GET)
     public String login(Model model, String error, String logout) {
-        if (error != null)
-            model.addAttribute("error", "Your username and password is invalid.");
+        if (error != null) {
+            model.addAttribute(UIAttribute.ERROR, "Your username and password is invalid.");
+        }
 
-        if (logout != null)
-            model.addAttribute("message", "You have been logged out successfully.");
+        if (logout != null) {
+            model.addAttribute(UIAttribute.MESSAGE, "You have been logged out successfully.");
+        }
 
-        return "login";
+        return UrlMapping.LOGIN_DESTINATION_JSP;
     }
 
-    @RequestMapping(value = "/toMap", method = RequestMethod.GET)
+    @RequestMapping(value = UrlMapping.TO_MAP, method = RequestMethod.GET)
     public ModelAndView getPages() {
 
         return new ModelAndView("map");
     }
 
-    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
+    @RequestMapping(value = {UrlMapping.ROOT, UrlMapping.WELCOME}, method = RequestMethod.GET)
     public String welcome(Model model) {
-        String userName = context.getUserPrincipal().getName();
-        User userForm = userService.findByUsername(userName);
+        final String userName = context.getUserPrincipal().getName();
+        final User userForm = userService.findByUsername(userName);
         if (userForm == null) {
             throw new UserNotFoundException(String.format("No user found with this userName %s", userName));
         }
-        model.addAttribute("userForm", userForm);
+        model.addAttribute(UIAttribute.USER_FORM, userForm);
 
-        return "welcomeUser";
+        return UrlMapping.WELCOME_DESTINATION_JSP;
     }
 
-    @RequestMapping(value = {"/edit-user-{id}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.GET)
     public String editUser(@PathVariable Long id, ModelMap model) {
-        User user = userService.findById(id);
+        final User user = userService.findById(id);
         try {
             if (user.getUsername() != null && !user.getUsername().equals(context.getUserPrincipal().getName())) {
-                return "login";
+                return UrlMapping.LOGIN_DESTINATION_JSP;
             }
         } catch (Exception ex) {
             throw new UserNotFoundException();
         }
-        model.addAttribute("userForm", user);
+        model.addAttribute(UIAttribute.USER_FORM, user);
 
-        return "editUser";
+        return UrlMapping.EDIT_USER_DESTINATION_JSP;
     }
 
-    @RequestMapping(value = {"/edit-user-{id}"}, method = RequestMethod.POST)
+    @RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.POST)
     public String updateUser(@Valid User userForm, BindingResult bindingResult, ModelMap model, @PathVariable Long id) {
         userValidator.validateEdit(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return "redirect:/edit-user-" + id;
+            return UrlMapping.EDIT_USER_REDIRECT_JSP + id;
         }
         userService.updateUser(userForm);
-        model.addAttribute("userForm", userForm);
-        model.addAttribute("success", "User " + userForm.getFirstName() + " " + userForm.getLastName() + " updated successfully");
+        model.addAttribute(UIAttribute.USER_FORM, userForm);
+        model.addAttribute(UIAttribute.SUCCESS, "User " + userForm.getFirstName() + " " + userForm.getLastName() + " updated successfully");
 
-        return "registrationSuccess";
+        return UrlMapping.REGISTRATION_SUCCESS_DESTINATION_JSP;
     }
 
-    @RequestMapping(value = {"/delete-user-{id}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {UrlMapping.DELETE_USER + "/{id}"}, method = RequestMethod.GET)
     public String deleteUser(@PathVariable Long id) {
         userService.deleteUserById(id);
 
-        return "deleteSuccess";
+        return UrlMapping.DELETE_SUCCESS_DESTINATION_JSP;
     }
 
-    @RequestMapping(value = {"/add-document-{id}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{id}"}, method = RequestMethod.GET)
     public String addDocuments(@PathVariable Long id, ModelMap model) {
-        User user = userService.findById(id);
+        final User user = userService.findById(id);
         try {
             if (user.getUsername() != null && !user.getUsername().equals(context.getUserPrincipal().getName())) {
-                return "login";
+                return UrlMapping.LOGIN_DESTINATION_JSP;
             }
         } catch (Exception ex) {
             throw new DocumentNotFoundException("No document found with that id or userName");
         }
-        model.addAttribute("user", user);
-        FileBucket fileModel = new FileBucket();
-        model.addAttribute("fileBucket", fileModel);
-        List<Catalog> documents = catalogService.findAllByUserId(id);
-        model.addAttribute("documents", documents);
+        model.addAttribute(UIAttribute.USER, user);
+        final FileBucket fileModel = new FileBucket();
+        model.addAttribute(UIAttribute.FILE_BUCKET, fileModel);
+        final List<Catalog> documents = catalogService.findAllByUserId(id);
+        model.addAttribute(UIAttribute.DOCUMENTS, documents);
 
-        return "manageDocuments";
+        return UrlMapping.MANAGE_DOC_DESTINATION_JSP;
     }
 
-    @RequestMapping(value = {"/download-document-{userId}-{docId}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {UrlMapping.DOWNLOAD_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
     public String downloadDocument(@PathVariable Long userId, @PathVariable Long docId, HttpServletResponse response) throws IOException {
         domainUtils.downloadDocument(response, docId);
 
-        return "redirect:/add-document-" + userId;
+        return UrlMapping.ADD_DOC_REDIRECT_JSP + "/" + userId;
     }
 
-    @RequestMapping(value = {"/delete-document-{userId}-{docId}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {UrlMapping.DELETE_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
     public String deleteDocument(@PathVariable Long userId, @PathVariable Long docId) {
         catalogService.deleteById(docId);
 
-        return "redirect:/add-document-" + userId;
+        return UrlMapping.ADD_DOC_REDIRECT_JSP + "/" + userId;
     }
 
-    @RequestMapping(value = {"/add-document-{userId}"}, method = RequestMethod.POST)
+    @RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{userId}"}, method = RequestMethod.POST)
     public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model, @PathVariable Long userId) throws IOException {
 
         return domainUtils.uploadDocument(fileBucket, result, model, userId);
@@ -194,9 +201,9 @@ public class UserController {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ModelAndView handleUserError() {
-        ModelAndView modelAndView = new ModelAndView();
-        String domain = messageSource.getMessage("account.user.label", null, null);
-        modelAndView.addObject("domain", domain);
+        final ModelAndView modelAndView = new ModelAndView();
+        final String domain = messageSource.getMessage("account.user.label", null, null);
+        modelAndView.addObject(UIAttribute.DOMAIN, domain);
         modelAndView.setViewName("notFound");
 
         return modelAndView;
@@ -204,9 +211,9 @@ public class UserController {
 
     @ExceptionHandler(DocumentNotFoundException.class)
     public ModelAndView handleDocumentError() {
-        ModelAndView modelAndView = new ModelAndView();
-        String domain = messageSource.getMessage("account.document.label", null, null);
-        modelAndView.addObject("domain", domain);
+        final ModelAndView modelAndView = new ModelAndView();
+        final String domain = messageSource.getMessage("account.document.label", null, null);
+        modelAndView.addObject(UIAttribute.DOMAIN, domain);
         modelAndView.setViewName("notFound");
 
         return modelAndView;

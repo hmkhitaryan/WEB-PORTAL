@@ -53,10 +53,10 @@ public class HibernateConfiguration {
         properties.put("hibernate.format_sql", environment.getRequiredProperty("hibernate.format_sql"));
         return properties;        
     }
-    
+
 	@Bean
-    @Autowired
-    public HibernateTransactionManager transactionManager(SessionFactory s) {
+	@Autowired
+	public HibernateTransactionManager transactionManager(SessionFactory s) {
        HibernateTransactionManager txManager = new HibernateTransactionManager();
        txManager.setSessionFactory(s);
        return txManager;

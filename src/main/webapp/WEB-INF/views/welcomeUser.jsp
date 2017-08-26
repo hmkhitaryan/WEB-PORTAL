@@ -1,12 +1,20 @@
+<%@ page import="com.egs.account.mapping.UrlMapping" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="LOGOUT_URL" value="<%=UrlMapping.LOGOUT%>"/>
+<c:set var="ADD_DOC_URL" value="<%=UrlMapping.ADD_DOCUMENT%>"/>
+<c:set var="EDIT_USER_URL" value="<%=UrlMapping.EDIT_USER%>"/>
+<c:set var="DELETE_USER_URL" value="<%=UrlMapping.DELETE_USER%>"/>
+<c:set var="ENGLISH_LANG_URL" value="<%=UrlMapping.ENGLISH_LANG%>"/>
+<c:set var="FRENCH_LANG_URL" value="<%=UrlMapping.FRENCH_LANG%>"/>
+<c:set var="TO_MAP_URL" value="<%=UrlMapping.FRENCH_LANG%>"/>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <a href="<c:url value='/toMap'/>" ><spring:message code= "document.tomap.text"/></a>
+    <a href="<c:url value='${TO_MAP_URL}'/>"><spring:message code="document.tomap.text"/></a>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -26,7 +34,7 @@
 <div class="generic-container">
     <div class="panel panel-default">
         <c:if test="${pageContext.request.userPrincipal.name != null}">
-        <form id="logoutForm" method="POST" action="${contextPath}/logout">
+        <form id="logoutForm" method="POST" action="${contextPath}${LOGOUT_URL}">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
 
@@ -53,12 +61,16 @@
                     <td>${userForm.email} </td>
                     <td>${userForm.dateRegistered} </td>
                     <td>${userForm.skypeID} </td>
-                    <td><a href="<c:url value='/edit-user-${userForm.id}' />" class="btn btn-success custom-width"><spring:message code= "button.edit.label"/></a></td>
-                    <td><a href="<c:url value='/delete-user-${userForm.id}' />" class="btn btn-danger custom-width"><spring:message code= "button.delete.label"/></a>
+                    <td><a href="<c:url value='${EDIT_USER_URL}/${userForm.id}' />"
+                           class="btn btn-success custom-width">
+                        <spring:message code="button.edit.label"/></a></td>
+                    <td><a href="<c:url value='${DELETE_USER_URL}/${userForm.id}' />"
+                           class="btn btn-danger custom-width">
+                        <spring:message code="button.delete.label"/></a>
                     </td>
                 </tr>
                 <div class="pull-right" style="padding-right:50px">
-                    <a href="?language=en" >English</a>|<a href="?language=fr" >French</a>
+                    <a href="${ENGLISH_LANG_URL}">English</a>|<a href="${FRENCH_LANG_URL}">French</a>
                 </div>
                 </tbody>
             </table>
@@ -66,7 +78,7 @@
     </div>
 
     <span class="well pull-left">
-		    <a href="<c:url value='/add-document-${userForm.id}'/>" ><spring:message code= "document.upload.text"/></a>
+		    <a href="<c:url value='${ADD_DOC_URL}/${userForm.id}'/>"><spring:message code="document.upload.text"/></a>
 		</span>
 
     <span class="well pull-left">

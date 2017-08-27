@@ -1,5 +1,7 @@
 package com.egs.account.utils.domainUtils;
 
+import com.egs.account.mapping.UIAttribute;
+import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
 import com.egs.account.model.FileBucket;
 import com.egs.account.model.User;
@@ -20,54 +22,54 @@ import java.util.List;
 
 public class DomainUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DomainUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DomainUtils.class);
 
-    @Autowired
-    private CatalogService catalogService;
+	@Autowired
+	private CatalogService catalogService;
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    public void saveDocument(FileBucket fileBucket, User user) throws IOException {
-        Catalog document = new Catalog();
-        MultipartFile multipartFile = fileBucket.getFile();
+	public void saveDocument(FileBucket fileBucket, User user) throws IOException {
+		Catalog document = new Catalog();
+		MultipartFile multipartFile = fileBucket.getFile();
 
-        document.setLink(multipartFile.getOriginalFilename());
-        document.setComment(fileBucket.getComment());
-        document.setContent(multipartFile.getBytes());
-        document.setType(multipartFile.getContentType());
-        document.setInsertDate(new Date());
-        document.setUser(user);
+		document.setLink(multipartFile.getOriginalFilename());
+		document.setComment(fileBucket.getComment());
+		document.setContent(multipartFile.getBytes());
+		document.setType(multipartFile.getContentType());
+		document.setInsertDate(new Date());
+		document.setUser(user);
 
-        catalogService.saveDocument(document);
-    }
+		catalogService.saveDocument(document);
+	}
 
-    public void downloadDocument(HttpServletResponse response, Long docId) throws IOException {
-        Catalog document = catalogService.findById(docId);
-        response.setContentType(document.getType());
-        response.setContentLength(document.getContent().length);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + document.getLink() + "\"");
+	public void downloadDocument(HttpServletResponse response, Long docId) throws IOException {
+		Catalog document = catalogService.findById(docId);
+		response.setContentType(document.getType());
+		response.setContentLength(document.getContent().length);
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + document.getLink() + "\"");
 
-        FileCopyUtils.copy(document.getContent(), response.getOutputStream());
-    }
+		FileCopyUtils.copy(document.getContent(), response.getOutputStream());
+	}
 
-    public String uploadDocument(FileBucket fileBucket, BindingResult result, ModelMap model, Long userId) throws IOException {
+	public String uploadDocument(FileBucket fileBucket, BindingResult result, ModelMap model, Long userId) throws IOException {
 
-        if (result.hasErrors()) {
-            LOGGER.error("validation errors");
-            User user = userService.findById(userId);
-            model.addAttribute("user", user);
-            List<Catalog> documents = catalogService.findAllByUserId(userId);
-            model.addAttribute("documents", documents);
+		if (result.hasErrors()) {
+			LOGGER.error("validation errors");
+			User user = userService.findById(userId);
+			model.addAttribute(UIAttribute.USER, user);
+			List<Catalog> documents = catalogService.findAllByUserId(userId);
+			model.addAttribute(UIAttribute.DOCUMENTS, documents);
 
-            return "manageDocuments";
-        } else {
-            LOGGER.info("Fetching file");
-            User user = userService.findById(userId);
-            model.addAttribute("user", user);
-            saveDocument(fileBucket, user);
+			return UrlMapping.MANAGE_DOC_DESTINATION_JSP;
+		} else {
+			LOGGER.info("Fetching file");
+			User user = userService.findById(userId);
+			model.addAttribute(UIAttribute.USER, user);
+			saveDocument(fileBucket, user);
 
-            return "redirect:/add-document-" + userId;
-        }
-    }
+			return UrlMapping.ADD_DOC_REDIRECT_JSP + "/" + userId;
+		}
+	}
 }

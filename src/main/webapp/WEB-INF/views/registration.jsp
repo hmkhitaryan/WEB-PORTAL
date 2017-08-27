@@ -31,7 +31,7 @@
     <a href="${ENGLISH_LANG_URL}">English</a>|<a href="${FRENCH_LANG_URL}">French</a>
 </div>
 <div class="container">
-    <form id="logoutForm" method="POST" action="${contextPath}/${LOGOUT_URL}">
+    <form id="logoutForm" method="POST" action="${contextPath}${LOGOUT_URL}">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 
@@ -90,7 +90,7 @@
         <spring:bind path="passwordConfirm">
             <div class="form-group ${status.error ? 'has-error' : ''}">
                 <form:input type="password" path="passwordConfirm" class="form-control"
-                            placeholder="Confirm your password"/>
+                            placeholder="Confirm password"/>
                 <form:errors path="passwordConfirm"/>
             </div>
         </spring:bind>

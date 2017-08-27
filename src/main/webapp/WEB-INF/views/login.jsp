@@ -37,7 +37,9 @@
 <div class="container">
 
     <form method="POST" action="${contextPath}${LOGIN_URL}" class="form-signin">
-        <h2 class="form-heading"><spring:message code= "button.loginPage.label"/></h2>
+        <h2 class="form-heading">
+            <spring:message code="button.loginPage.label"/>
+        </h2>
 
         <div class="form-group ${error != null ? 'has-exception' : ''}">
             <span>${message}</span>
@@ -47,13 +49,17 @@
             <span>${error}</span>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
-            <button class="btn btn-lg btn-primary btn-block" type="submit"><spring:message code= "button.login.label"/></button>
-            <h4 class="text-center"><a href="${contextPath}${REGISTRATION_URL}"><spring:message
-                    code="account.create.label"/></a></h4>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">
+                <spring:message code="button.login.label"/>
+            </button>
+
+            <h4 class="text-center">
+                <a href="${contextPath}${REGISTRATION_URL}">
+                    <spring:message code="account.create.label"/>
+                </a>
+            </h4>
         </div>
-
     </form>
-
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="${contextPath}/resources/js/bootstrap.min.js"></script>

@@ -29,8 +29,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 
 @ContextConfiguration(locations = {
-        "classpath:/appconfig-mvc.xml",
-        "classpath:/appconfig-data.xml",
         "classpath:/appconfig-security.xml"},
         classes = {HibernateConfiguration.class})
 @WebAppConfiguration

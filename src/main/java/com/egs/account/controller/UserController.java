@@ -148,7 +148,8 @@ public class UserController {
         }
         userService.updateUser(userForm);
         model.addAttribute(UIAttribute.USER_FORM, userForm);
-        model.addAttribute(UIAttribute.SUCCESS, "User " + userForm.getFirstName() + " " + userForm.getLastName() + " updated successfully");
+	    model.addAttribute(UIAttribute.SUCCESS, "User " + userForm.getFirstName() + " " + userForm.getLastName() +
+			    " updated successfully");
 
         return UrlMapping.REGISTRATION_SUCCESS_DESTINATION_JSP;
     }
@@ -180,8 +181,9 @@ public class UserController {
     }
 
     @RequestMapping(value = {UrlMapping.DOWNLOAD_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
-    public String downloadDocument(@PathVariable Long userId, @PathVariable Long docId, HttpServletResponse response) throws IOException {
-        domainUtils.downloadDocument(response, docId);
+    public String downloadDocument(@PathVariable Long userId, @PathVariable Long docId, HttpServletResponse response)
+		    throws IOException {
+	    domainUtils.downloadDocument(response, docId);
 
         return UrlMapping.ADD_DOC_REDIRECT_JSP + "/" + userId;
     }
@@ -194,7 +196,8 @@ public class UserController {
     }
 
     @RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{userId}"}, method = RequestMethod.POST)
-    public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model, @PathVariable Long userId) throws IOException {
+    public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model, @PathVariable Long userId)
+		    throws IOException {
 
         return domainUtils.uploadDocument(fileBucket, result, model, userId);
     }

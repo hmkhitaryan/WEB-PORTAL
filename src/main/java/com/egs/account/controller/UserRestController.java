@@ -1,7 +1,7 @@
 package com.egs.account.controller;
 
-import java.util.List;
-
+import com.egs.account.model.User;
+import com.egs.account.service.user.UserService;
 import com.egs.account.utils.convertor.JsonConvertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.egs.account.model.User;
-import com.egs.account.service.user.*;
+import java.util.List;
 
 @RestController
 public class UserRestController {
@@ -24,8 +23,8 @@ public class UserRestController {
 
     //-------------------Retrieve All Users--------------------------------------------------------
 
-    @RequestMapping(value = "/user/", method = RequestMethod.GET)
-    public String listAllUsers() {
+	@RequestMapping(value = "/user", method = RequestMethod.GET)
+	public String listAllUsers() {
         String userAsJson = "";
         List<User> users = userService.findAllUsers();
         try {

@@ -7,7 +7,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -17,8 +21,7 @@ import java.util.Locale;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = {"com.egs.account.controller"})
-
+@ComponentScan(basePackages = {"com.egs.account.*"})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Override
@@ -74,6 +77,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 	public LocaleChangeInterceptor localeInterceptor() {
 		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
 		interceptor.setParamName("language");
+
 		return interceptor;
 	}
 

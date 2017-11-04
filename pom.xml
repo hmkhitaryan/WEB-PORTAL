@@ -249,5 +249,49 @@
         </dependency>
     </dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.2.8.v20150217</version>
+				<configuration>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<stopKey>foo</stopKey>
+					<stopPort>9999</stopPort>
+					<stopWait>2</stopWait>
+					<webApp>
+						<contextPath>/</contextPath>
+					</webApp>
+					<httpConnector>
+						<port>7777</port>
+					</httpConnector>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-util</artifactId>
+						<version>9.2.8.v20150217</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

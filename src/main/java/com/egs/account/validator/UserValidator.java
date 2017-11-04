@@ -10,6 +10,9 @@ import org.springframework.validation.Validator;
 
 @Component
 public class UserValidator implements Validator {
+
+	private static final String NOT_EMPTY = "NotEmpty";
+
     @Autowired
     private UserService userService;
 
@@ -20,8 +23,8 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object o, Errors errors) {
-        User user = (User) o;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "NotEmpty");
+	    final User user = (User) o;
+	    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", NOT_EMPTY);
 
         if (user.getUsername().length() < 6 || user.getUsername().length() > 32) {
             errors.rejectValue("username", "Size.userForm.username");
@@ -45,8 +48,8 @@ public class UserValidator implements Validator {
     }
 
     public void validateEdit(Object o, Errors errors) {
-        User user = (User) o;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
+	    final User user = (User) o;
+	    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
         if (user.getPassword().length() < 8 || user.getPassword().length() > 32) {
             errors.rejectValue("password", "Size.userForm.password");
         }

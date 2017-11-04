@@ -9,20 +9,20 @@ import org.springframework.validation.Validator;
 @Component
 public class FileValidator implements Validator {
 
-    public boolean supports(Class<?> clazz) {
-        return FileBucket.class.isAssignableFrom(clazz);
-    }
+	public boolean supports(Class<?> clazz) {
+		return FileBucket.class.isAssignableFrom(clazz);
+	}
 
-    public void validate(Object obj, Errors errors) {
-        FileBucket file = (FileBucket) obj;
-        long fileSize = file.getFile().getSize();
-        if (file.getFile() != null) {
-            if (fileSize == 0) {
-                errors.rejectValue("file", "missing.file");
-            }
-            if (fileSize >  2000000) {
-                errors.rejectValue("file", "tooBig.file");
-            }
-        }
-    }
+	public void validate(Object obj, Errors errors) {
+		final FileBucket file = (FileBucket) obj;
+		final long fileSize = file.getFile().getSize();
+		if (file.getFile() != null) {
+			if (fileSize == 0) {
+				errors.rejectValue("file", "missing.file");
+			}
+			if (fileSize > 2000000) {
+				errors.rejectValue("file", "tooBig.file");
+			}
+		}
+	}
 }

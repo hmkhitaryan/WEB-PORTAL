@@ -38,30 +38,60 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUsername(String username) { return userRepository.findByUsername(username); }
 
-    public List<User> findAllUsers() {
-        return userRepository.findAllUsers();
-    }
+	/**
+	 * Find all users.
+	 *
+	 * @return list of user
+	 */
+	public List<User> findAllUsers() {
+		return userRepository.findAllUsers();
+	}
 
-    public User findById(Long Id) {
-        return userRepository.findById(Id);
-    }
+	/**
+	 * Find user by id.
+	 *
+	 * @return user found
+	 */
+	public User findById(Long Id) {
+		return userRepository.findById(Id);
+	}
 
-    public void updateUser(User user) {
-        User entity = userRepository.findById(user.getId());
-        if (entity != null) {
-            entity.setFirstName(user.getFirstName());
-            entity.setLastName(user.getLastName());
-            entity.setEmail(user.getEmail());
-            entity.setSkypeID(user.getSkypeID());
-            entity.setDateRegistered(new Date());
-            entity.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            userRepository.save(entity);
-            LOGGER.info("user with id {} successfully updated", user.getId());
-        }
-    }
+	/**
+	 * Update user info.
+	 *
+	 * @param user user Whose info will be updated
+	 */
+	public void updateUser(User user) {
+		final User entity = userRepository.findById(user.getId());
+		if (entity != null) {
+			updateUserInfo(entity, user);
+			userRepository.save(entity);
+			LOGGER.info("user with id {} successfully updated", user.getId());
+		}
+	}
 
-    public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
-        LOGGER.info("user with id {} successfully deleted", id);
-    }
+	/**
+	 * Update user info.
+	 *
+	 * @param u1 user whose info will be updated
+	 * @param u2 whose info will be used
+	 */
+	private void updateUserInfo(User u1, User u2) {
+		u1.setFirstName(u2.getFirstName());
+		u1.setLastName(u2.getLastName());
+		u1.setEmail(u2.getEmail());
+		u1.setSkypeID(u2.getSkypeID());
+		u1.setDateRegistered(new Date());
+		u1.setPassword(bCryptPasswordEncoder.encode(u2.getPassword()));
+	}
+
+	/**
+	 * Delete user by id.
+	 *
+	 * @param id by which user will be deleted
+	 */
+	public void deleteUserById(Long id) {
+		userRepository.deleteById(id);
+		LOGGER.info("user with id {} successfully deleted", id);
+	}
 }

@@ -16,24 +16,25 @@ public class UserRepositoryImpl extends AbstractDao<Long, User> implements UserR
     private static final Logger LOGGER = LoggerFactory.getLogger(UserRepositoryImpl.class);
 
     public User findById(Long id) {
-        User user = getByKey(id);
-        return user;
+	    return getByKey(id);
     }
 
     public User findByUsername(String username) {
         LOGGER.info("entered user with username: {}", username);
-        Criteria crit = createEntityCriteria();
-        crit.add(Restrictions.eq("username", username));
-        User user = (User) crit.uniqueResult();
+	    final Criteria crit = createEntityCriteria();
+	    crit.add(Restrictions.eq("username", username));
+	    final User user = (User) crit.uniqueResult();
+
         return user;
     }
 
     @SuppressWarnings("unchecked")
     public List<User> findAllUsers() {
-        Criteria criteria = createEntityCriteria().addOrder(Order.asc("firstName"));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);//To avoid duplicates.
-        List<User> users = (List<User>) criteria.list();
-        LOGGER.info("Retrieved all users...");
+	    final Criteria criteria = createEntityCriteria().addOrder(Order.asc("firstName"));
+	    criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);//To avoid duplicates.
+	    final List<User> users = (List<User>) criteria.list();
+	    LOGGER.info("Retrieved all users...");
+
         return users;
     }
 
@@ -43,10 +44,10 @@ public class UserRepositoryImpl extends AbstractDao<Long, User> implements UserR
     }
 
     public void deleteById(Long id) {
-        Criteria criteria = createEntityCriteria();
-        criteria.add(Restrictions.eq("id", id));
-        User user = (User) criteria.uniqueResult();
-        delete(user);
+	    final Criteria criteria = createEntityCriteria();
+	    criteria.add(Restrictions.eq("id", id));
+	    final User user = (User) criteria.uniqueResult();
+	    delete(user);
         LOGGER.info("deleted successfully user with id : {}", user.getId());
     }
 

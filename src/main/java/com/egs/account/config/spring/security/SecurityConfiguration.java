@@ -28,11 +28,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.antMatchers("/").access("hasRole('ROLE_USER')")
+		http.csrf().disable()
+				.authorizeRequests()
+				.antMatchers("/", "/welcome").access("hasRole('ROLE_USER')")
 				.and()
 				.formLogin().loginPage("/login")
-				.defaultSuccessUrl("/welcome")
 				.failureUrl("/login?error")
 				.usernameParameter("username").passwordParameter("password")
 				.and()

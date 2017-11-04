@@ -14,7 +14,8 @@ public class CatalogRepoImpl extends AbstractDao<Long, Catalog> implements Catal
 
     @SuppressWarnings("unchecked")
     public List<Catalog> findAll() {
-        Criteria criteria = createEntityCriteria();
+	    final Criteria criteria = createEntityCriteria();
+
         return (List<Catalog>)criteria.list();
     }
 
@@ -28,14 +29,15 @@ public class CatalogRepoImpl extends AbstractDao<Long, Catalog> implements Catal
 
     @SuppressWarnings("unchecked")
     public List<Catalog> findAllByUserId(Long userId){
-        Criteria criteria = createEntityCriteria();
-        Criteria userCriteria = criteria.createCriteria("user");
-        userCriteria.add(Restrictions.eq("id", userId));
+	    final Criteria criteria = createEntityCriteria();
+	    final Criteria userCriteria = criteria.createCriteria("user");
+	    userCriteria.add(Restrictions.eq("id", userId));
+
         return (List<Catalog>)criteria.list();
     }
 
     public void deleteById(Long id) {
-        Catalog catalog =  getByKey(id);
-        delete(catalog);
+	    final Catalog catalog = getByKey(id);
+	    delete(catalog);
     }
 }

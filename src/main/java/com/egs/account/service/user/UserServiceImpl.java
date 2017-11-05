@@ -1,7 +1,11 @@
 package com.egs.account.service.user;
 
+import com.egs.account.exception.EmailExistsException;
+import com.egs.account.model.Role;
 import com.egs.account.model.User;
+import com.egs.account.model.VerificationToken;
 import com.egs.account.repository.role.RoleRepository;
+import com.egs.account.repository.token.VerificationTokenRepository;
 import com.egs.account.repository.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,26 +21,37 @@ import java.util.List;
 @Service("userService")
 @Transactional
 public class UserServiceImpl implements UserService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    @Override
-    public void saveUser(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRoles(new HashSet<>(roleRepository.findAll()));
-        user.setDateRegistered(new Date());
-        userRepository.save(user);
-        LOGGER.info("user with username {} successfully saved", user.getUsername());
-    }
+	@Autowired
+	private UserRepository userRepository;
 
-    @Override
-    public User findByUsername(String username) { return userRepository.findByUsername(username); }
+	@Autowired
+	private RoleRepository roleRepository;
+
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@Autowired
+	private UserRepository repository;
+
+	@Autowired
+	private VerificationTokenRepository tokenRepository;
+
+	@Override
+	public void saveUser(User user) {
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		user.setRoles(new HashSet<>(roleRepository.findAll()));
+		user.setDateRegistered(new Date());
+		userRepository.save(user);
+		LOGGER.info("user with username {} successfully saved", user.getUsername());
+	}
+
+	@Override
+	public User findByUsername(String username) {
+		return userRepository.findByUsername(username);
+	}
 
 	/**
 	 * Find all users.
@@ -93,5 +108,52 @@ public class UserServiceImpl implements UserService {
 	public void deleteUserById(Long id) {
 		userRepository.deleteById(id);
 		LOGGER.info("user with id {} successfully deleted", id);
+	}
+
+	@Override
+	public User registerNewUserAccount(User user)
+			throws EmailExistsException {
+
+		if (emailExist(user.getEmail())) {
+			throw new EmailExistsException("There is an account with that email adress: "
+					+ user.getEmail());
+		}
+
+		User newUser = new User();
+		newUser.setFirstName(newUser.getFirstName());
+		newUser.setLastName(newUser.getLastName());
+		newUser.setPassword(newUser.getPassword());
+		newUser.setEmail(newUser.getEmail());
+		newUser.getRoles().add(new Role(Long.valueOf(1), newUser.getUsername()));
+
+		return repository.save(newUser);
+	}
+
+	private boolean emailExist(String email) {
+		User user = repository.findByUsername(email);
+
+		return user != null;
+	}
+
+	@Override
+	public User getUser(String verificationToken) {
+		User user = tokenRepository.findByToken(verificationToken).getUser();
+		return user;
+	}
+
+	@Override
+	public VerificationToken getVerificationToken(String VerificationToken) {
+		return tokenRepository.findByToken(VerificationToken);
+	}
+
+	@Override
+	public void saveRegisteredUser(User user) {
+		repository.save(user);
+	}
+
+	@Override
+	public void createVerificationToken(User user, String token) {
+		VerificationToken myToken = new VerificationToken(token, user);
+		tokenRepository.save(myToken);
 	}
 }

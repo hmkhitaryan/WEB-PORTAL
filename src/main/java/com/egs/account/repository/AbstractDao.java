@@ -21,16 +21,16 @@ public abstract class AbstractDao<PK extends Serializable, T> {
     @Autowired
     private SessionFactory mySessionFactory;
 
-    protected Session getSession() {
+    private Session getSession() {
         return mySessionFactory.getCurrentSession();
     }
 
     @SuppressWarnings("unchecked")
-    public T getByKey(PK key) {
+    protected T getByKey(PK key) {
         return (T) getSession().get(persistentClass, key);
     }
 
-    public void persist(T entity) {
+    protected void persist(T entity) {
         getSession().persist(entity);
     }
 

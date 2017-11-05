@@ -38,10 +38,12 @@ public class UserRepositoryImpl extends AbstractDao<Long, User> implements UserR
         return users;
     }
 
-    public void save(User user) {
-        persist(user);
+	public User save(User user) {
+		persist(user);
         LOGGER.info("persisted user {}", user.getUsername());
-    }
+
+		return findById(user.getId());
+	}
 
     public void deleteById(Long id) {
 	    final Criteria criteria = createEntityCriteria();

@@ -1,12 +1,15 @@
 package com.egs.account.controller;
 
+import com.egs.account.event.OnRegistrationCompleteEvent;
 import com.egs.account.exception.DocumentNotFoundException;
+import com.egs.account.exception.EmailExistsException;
 import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
 import com.egs.account.model.FileBucket;
 import com.egs.account.model.User;
+import com.egs.account.model.VerificationToken;
 import com.egs.account.service.catalog.CatalogService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
@@ -16,11 +19,13 @@ import com.egs.account.validator.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -28,13 +33,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import static com.egs.account.mapping.UIAttribute.NOT_FOUND;
 
@@ -56,6 +65,9 @@ public class UserController {
 
 	@Autowired
 	DomainUtils domainUtils;
+
+	@Autowired
+	ApplicationEventPublisher eventPublisher;
 
 	private UserService userService;
 
@@ -88,18 +100,69 @@ public class UserController {
 		return UrlMapping.REGISTRATION_DESTINATION_JSP;
 	}
 
-	@RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.POST)
-	public String registration(@ModelAttribute(UIAttribute.USER_FORM) User userForm, BindingResult bindingResult) {
-		userValidator.validate(userForm, bindingResult);
+//	@RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.POST)
+//	public String registration(@ModelAttribute(UIAttribute.USER_FORM) User userForm, BindingResult bindingResult) {
+//		userValidator.validate(userForm, bindingResult);
+//
+//		if (bindingResult.hasErrors()) {
+//			return UrlMapping.REGISTRATION_DESTINATION_JSP;
+//		}
+//		userService.saveUser(userForm);
+//		securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
+//		LOGGER.info("user with username {} successfully registered", userForm.getUsername());
+//
+//		return UrlMapping.WELCOME_REDIRECT_JSP;
+//	}
 
-		if (bindingResult.hasErrors()) {
-			return UrlMapping.REGISTRATION_DESTINATION_JSP;
+	@RequestMapping(value = "/user/registration", method = RequestMethod.POST)
+	public ModelAndView registerUserAccount(
+			@ModelAttribute("user") @Valid User accountDto,
+			BindingResult result,
+			WebRequest request,
+			Errors errors) throws EmailExistsException {
+
+		if (result.hasErrors()) {
+			return new ModelAndView("registration", "user", accountDto);
 		}
-		userService.saveUser(userForm);
-		securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
-		LOGGER.info("user with username {} successfully registered", userForm.getUsername());
 
-		return UrlMapping.WELCOME_REDIRECT_JSP;
+		User registered = userService.registerNewUserAccount(accountDto);
+		if (registered == null) {
+			result.rejectValue("email", "message.regError");
+		}
+		try {
+			String appUrl = request.getContextPath();
+			eventPublisher.publishEvent(new OnRegistrationCompleteEvent
+					(registered, request.getLocale(), appUrl));
+		} catch (Exception me) {
+			return new ModelAndView("emailError", "user", accountDto);
+		}
+		return new ModelAndView("successRegister", "user", accountDto);
+	}
+
+	@RequestMapping(value = "/regitrationConfirm", method = RequestMethod.GET)
+	public String confirmRegistration
+			(WebRequest request, Model model, @RequestParam("token") String token) {
+
+		Locale locale = request.getLocale();
+
+		VerificationToken verificationToken = userService.getVerificationToken(token);
+		if (verificationToken == null) {
+			String message = messageSource.getMessage("auth.message.invalidToken", null, locale);
+			model.addAttribute("message", message);
+			return "redirect:/badUser.html?lang=" + locale.getLanguage();
+		}
+
+		User user = verificationToken.getUser();
+		Calendar cal = Calendar.getInstance();
+		if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+			String messageValue = messageSource.getMessage("auth.message.expired", null, locale);
+			model.addAttribute("message", messageValue);
+			return "redirect:/badUser.html?lang=" + locale.getLanguage();
+		}
+
+		user.setEnabled(true);
+		userService.saveRegisteredUser(user);
+		return "redirect:/login.html?lang=" + request.getLocale().getLanguage();
 	}
 
 	@RequestMapping(value = UrlMapping.LOGIN, method = RequestMethod.GET)

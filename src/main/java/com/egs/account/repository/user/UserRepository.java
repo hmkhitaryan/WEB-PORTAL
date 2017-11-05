@@ -1,6 +1,7 @@
 package com.egs.account.repository.user;
 
 import com.egs.account.model.User;
+
 import java.util.List;
 
 public interface UserRepository  {
@@ -8,7 +9,7 @@ public interface UserRepository  {
 
     User findById(Long id);
 
-    void save(User user);
+    User save(User user);
 
     void deleteById(Long id);
 

@@ -1,6 +1,10 @@
 package com.egs.account.service.user;
 
+//import com.egs.account.exception.EmailExistsException;
+
+import com.egs.account.exception.EmailExistsException;
 import com.egs.account.model.User;
+import com.egs.account.model.VerificationToken;
 
 import java.util.List;
 
@@ -54,4 +58,15 @@ public interface UserService {
 	 * @return users found
 	 */
 	List<User> findAllUsers();
+
+	User registerNewUserAccount(User user)
+			throws EmailExistsException;
+
+	User getUser(String verificationToken);
+
+	void saveRegisteredUser(User user);
+
+	void createVerificationToken(User user, String token);
+
+	VerificationToken getVerificationToken(String VerificationToken);
 }

@@ -1,7 +1,6 @@
 package com.egs.account.service.user;
 
 import com.egs.account.exception.EmailExistsException;
-import com.egs.account.model.Role;
 import com.egs.account.model.User;
 import com.egs.account.model.VerificationToken;
 import com.egs.account.repository.role.RoleRepository;
@@ -119,14 +118,11 @@ public class UserServiceImpl implements UserService {
 					+ user.getEmail());
 		}
 
-		User newUser = new User();
-		newUser.setFirstName(newUser.getFirstName());
-		newUser.setLastName(newUser.getLastName());
-		newUser.setPassword(newUser.getPassword());
-		newUser.setEmail(newUser.getEmail());
-		newUser.getRoles().add(new Role(Long.valueOf(1), newUser.getUsername()));
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		user.setRoles(new HashSet<>(roleRepository.findAll()));
+		user.setDateRegistered(new Date());
 
-		return repository.save(newUser);
+		return repository.save(user);
 	}
 
 	private boolean emailExist(String email) {

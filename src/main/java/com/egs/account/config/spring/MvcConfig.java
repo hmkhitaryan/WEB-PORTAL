@@ -90,6 +90,11 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Bean(name = "mailSender")
 	public JavaMailSender mailSender() {
-		return new JavaMailSenderImpl();
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost("mail.from");
+		mailSender.setUsername("mail.toSend");
+		mailSender.setPassword("mail.password");
+
+		return mailSender;
 	}
 }

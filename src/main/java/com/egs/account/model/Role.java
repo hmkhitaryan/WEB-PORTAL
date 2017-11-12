@@ -22,6 +22,9 @@ public class Role {
 	@ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
 	private Set<User> users;
 
+	public Role() {
+	}
+
 	public Role(Long id, String username) {
 		this.id = id;
 		this.name = name;

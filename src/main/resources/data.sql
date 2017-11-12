@@ -15,6 +15,7 @@ CREATE TABLE `user` (
   `email`          VARCHAR(255)     DEFAULT NULL,
   `dateRegistered` DATE             DEFAULT NULL,
   `skypeID`        VARCHAR(255)     DEFAULT NULL,
+  `enabled`        bit              DEFAULT NULL,
   PRIMARY KEY (`id`)
 )
   ENGINE = InnoDB

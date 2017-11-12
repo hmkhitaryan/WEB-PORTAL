@@ -25,7 +25,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -114,29 +113,29 @@ public class UserController {
 //		return UrlMapping.WELCOME_REDIRECT_JSP;
 //	}
 
-	@RequestMapping(value = "/user/registration", method = RequestMethod.POST)
-	public ModelAndView registerUserAccount(
+	@RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.POST)
+	public String registerUserAccount(
 			@ModelAttribute("user") @Valid User accountDto,
-			BindingResult result,
-			WebRequest request,
-			Errors errors) throws EmailExistsException {
+			BindingResult bindingResult,
+			WebRequest request) throws EmailExistsException {
 
-		if (result.hasErrors()) {
-			return new ModelAndView("registration", "user", accountDto);
+		if (bindingResult.hasErrors()) {
+			return UrlMapping.REGISTRATION_DESTINATION_JSP;
 		}
 
 		User registered = userService.registerNewUserAccount(accountDto);
 		if (registered == null) {
-			result.rejectValue("email", "message.regError");
+			bindingResult.rejectValue("email", "message.regError");
 		}
 		try {
 			String appUrl = request.getContextPath();
-			eventPublisher.publishEvent(new OnRegistrationCompleteEvent
-					(registered, request.getLocale(), appUrl));
+			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), appUrl));
 		} catch (Exception me) {
-			return new ModelAndView("emailError", "user", accountDto);
+			//return new ModelAndView("emailError", "user", accountDto);
 		}
-		return new ModelAndView("successRegister", "user", accountDto);
+		securityService.autoLogin(registered.getUsername(), registered.getPasswordConfirm());
+
+		return UrlMapping.WELCOME_REDIRECT_JSP;
 	}
 
 	@RequestMapping(value = "/regitrationConfirm", method = RequestMethod.GET)

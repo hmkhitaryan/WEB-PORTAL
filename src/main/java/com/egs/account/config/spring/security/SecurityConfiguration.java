@@ -28,7 +28,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable()
+		http
+				/*static volatile int i = 1;
+				  3 threads
+				  i++;
+				  sout:i;
+				  print i*/
 				.authorizeRequests()
 				.antMatchers("/", "/welcome").access("hasRole('ROLE_USER')")
 				.and()

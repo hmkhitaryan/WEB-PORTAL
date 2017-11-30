@@ -58,6 +58,8 @@
                     <spring:message code="account.create.label"/>
                 </a>
             </h4>
+            <input id="remember_me" name="remember-me" type="checkbox"/>
+                    <label for="remember_me" class="inline">Remember me</label>
         </div>
     </form>
 </div>

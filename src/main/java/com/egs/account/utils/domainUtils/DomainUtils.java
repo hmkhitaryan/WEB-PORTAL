@@ -15,6 +15,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
@@ -32,7 +33,7 @@ public class DomainUtils {
 	@Autowired
 	private UserService userService;
 
-	public void saveDocument(FileBucket fileBucket, User user) throws IOException {
+	private void saveDocument(FileBucket fileBucket, User user) throws IOException {
 		final Catalog document = new Catalog();
 		final MultipartFile multipartFile = fileBucket.getFile();
 
@@ -53,6 +54,10 @@ public class DomainUtils {
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + document.getLink() + "\"");
 
 		FileCopyUtils.copy(document.getContent(), response.getOutputStream());
+	}
+
+	public boolean isLoggedInUser(HttpServletRequest context, User user) {
+		return user.getUsername() != null && user.getUsername().equals(context.getUserPrincipal().getName());
 	}
 
 	public String uploadDocument(FileBucket fileBucket, BindingResult result, ModelMap model, Long userId) throws IOException {

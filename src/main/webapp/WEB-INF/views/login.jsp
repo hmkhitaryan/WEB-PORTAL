@@ -58,12 +58,10 @@
                     <spring:message code="account.create.label"/>
                 </a>
             </h4>
-            <input id="remember_me" name="remember-me" type="checkbox"/>
-                    <label for="remember_me" class="inline">Remember me</label>
         </div>
     </form>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="${contextPath}/resources/js/bootstrap.min.js"></script>
+<script src="${contextPath}/js/bootstrap.min.js"></script>
 </body>
 </html>

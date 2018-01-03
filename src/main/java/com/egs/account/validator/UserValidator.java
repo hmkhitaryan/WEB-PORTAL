@@ -13,50 +13,71 @@ public class UserValidator implements Validator {
 
 	private static final String NOT_EMPTY = "NotEmpty";
 
-    @Autowired
-    private UserService userService;
+	private static final String USERNAME = "username";
 
-    @Override
-    public boolean supports(Class<?> aClass) {
-        return User.class.equals(aClass);
-    }
+	private static final String PASSWORD_CONFIRM = "passwordConfirm";
 
-    @Override
-    public void validate(Object o, Errors errors) {
-	    final User user = (User) o;
-	    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", NOT_EMPTY);
+	private static final String EMAIL = "email";
 
-        if (user.getUsername().length() < 6 || user.getUsername().length() > 32) {
-            errors.rejectValue("username", "Size.userForm.username");
-        }
-        if (userService.findByUsername(user.getUsername()) != null) {
-            errors.rejectValue("username", "Duplicate.userForm.username");
-        }
+	private static final String AT = "@";
 
-        if (!user.getPasswordConfirm().equals(user.getPassword())) {
-            errors.rejectValue("passwordConfirm", "Diff.userForm.passwordConfirm");
-        }
+	private static final String PASSWORD = "password";
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
-        if (user.getPassword().length() < 8 || user.getPassword().length() > 32) {
-            errors.rejectValue("password", "Size.userForm.password");
-        }
+	@Autowired
+	private UserService userService;
 
-        if (!user.getEmail().contains("@") || !user.getEmail().contains(".")) {
-            errors.rejectValue("email", "invalid.email");
-        }
-    }
+	@Override
+	public boolean supports(Class<?> aClass) {
+		return User.class.equals(aClass);
+	}
 
-    public void validateEdit(Object o, Errors errors) {
-	    final User user = (User) o;
-	    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
-        if (user.getPassword().length() < 8 || user.getPassword().length() > 32) {
-            errors.rejectValue("password", "Size.userForm.password");
-        }
+	@Override
+	public void validate(Object o, Errors errors) {
+		final User user = (User) o;
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, USERNAME, NOT_EMPTY);
 
-        if (!user.getEmail().contains("@") || !user.getEmail().contains(".")) {
-            errors.rejectValue("email", "invalid.email");
-        }
-    }
+		if (user.getUsername().length() < 6 || user.getUsername().length() > 32) {
+			errors.rejectValue(USERNAME, "Size.userForm.username");
+		}
+		if (userService.findByUsername(user.getUsername()) != null) {
+			errors.rejectValue(USERNAME, "Duplicate.userForm.username");
+		}
 
+		if (!user.getPasswordConfirm().equals(user.getPassword())) {
+			errors.rejectValue(PASSWORD_CONFIRM, "Diff.userForm.passwordConfirm");
+		}
+
+		validatePassword(errors, user.getPassword());
+
+		if (isInvalidEmail(user.getEmail())) {
+			errors.rejectValue(EMAIL, "invalid.email");
+		}
+	}
+
+	public boolean isInvalidEmail(String email) {
+		return !email.contains(AT) || !email.contains(".");
+	}
+
+	private void validatePassword(Errors errors, String password) {
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD, "NotEmpty");
+		if (isInvalidPassword(password)) {
+			errors.rejectValue(PASSWORD, "Size.userForm.password");
+		}
+	}
+
+	public boolean isInvalidPassword(String password) {
+		return password.length() < 8 || password.length() > 32;
+	}
+
+	public void validateEdit(Object o, Errors errors) {
+		final User user = (User) o;
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD, "NotEmpty");
+		if (user.getPassword().length() < 8 || user.getPassword().length() > 32) {
+			errors.rejectValue(PASSWORD, "Size.userForm.password");
+		}
+
+		if (!user.getEmail().contains(AT) || !user.getEmail().contains(".")) {
+			errors.rejectValue(EMAIL, "invalid.email");
+		}
+	}
 }

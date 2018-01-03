@@ -68,6 +68,7 @@
                 <form:input type="text" path="email" class="form-control" placeholder="Email"
                             autofocus="true"/>
                 <form:errors path="email"/>
+                <div id="ajaxGetEmailResponse" class="form-group has-error"></div>
             </div>
         </spring:bind>
 
@@ -84,6 +85,7 @@
                 <form:input type="password" path="password" class="form-control"
                             placeholder="Password (between 8 and 32 symbol)"/>
                 <form:errors path="password"/>
+                <div id="ajaxGetPasswordResponse" class="form-group has-error"></div>
             </div>
         </spring:bind>
 
@@ -92,6 +94,7 @@
                 <form:input type="password" path="passwordConfirm" class="form-control"
                             placeholder="Confirm password"/>
                 <form:errors path="passwordConfirm"/>
+                <div id="ajaxGetPasswordConfirmResponse" class="form-group has-error"></div>
             </div>
         </spring:bind>
 
@@ -104,6 +107,7 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="${contextPath}/resources/js/bootstrap.min.js"></script>
+<script src="${contextPath}/js/bootstrap.min.js"></script>
+<script src="${contextPath}/js/formValidation-ajax.js"></script>
 </body>
 </html>

@@ -66,10 +66,7 @@
                     mapOptions);
 
         }
-
-
     </script>
-
 </head>
 
 <body>

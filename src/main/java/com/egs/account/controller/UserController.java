@@ -48,6 +48,8 @@ public class UserController {
 
 	private static final String SLASH_SIGN = "/";
 
+	private static final String MAP = "map";
+
 	@Autowired
 	FileValidator fileValidator;
 
@@ -117,7 +119,7 @@ public class UserController {
 
 	@RequestMapping(value = UrlMapping.TO_MAP, method = RequestMethod.GET)
 	public ModelAndView getPages() {
-		return new ModelAndView("map");
+		return new ModelAndView(MAP);
 	}
 
 	@RequestMapping(value = {UrlMapping.ROOT, UrlMapping.WELCOME}, method = RequestMethod.GET)
@@ -170,10 +172,10 @@ public class UserController {
 	}
 
 	@RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{id}"}, method = RequestMethod.GET)
-	public String addDocuments(@PathVariable Long id, ModelMap model) {
+	public String uploadDocument(@PathVariable Long id, ModelMap model) {
 		final User user = userService.findById(id);
 		try {
-			boolean isLoggedInUser = user.getUsername() != null && user.getUsername().equals(context.getUserPrincipal().getName());
+			boolean isLoggedInUser = domainUtils.isLoggedInUser(context, user);
 			if (!isLoggedInUser) {
 				return UrlMapping.LOGIN_DESTINATION_JSP;
 			}
@@ -189,6 +191,13 @@ public class UserController {
 		return UrlMapping.MANAGE_DOC_DESTINATION_JSP;
 	}
 
+	@RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{userId}"}, method = RequestMethod.POST)
+	public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model, @PathVariable Long userId)
+			throws IOException {
+
+		return domainUtils.uploadDocument(fileBucket, result, model, userId);
+	}
+
 	@RequestMapping(value = {UrlMapping.DOWNLOAD_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
 	public String downloadDocument(@PathVariable Long userId, @PathVariable Long docId, HttpServletResponse response)
 			throws IOException {
@@ -202,13 +211,6 @@ public class UserController {
 		catalogService.deleteById(docId);
 
 		return UrlMapping.ADD_DOC_REDIRECT_JSP + SLASH_SIGN + userId;
-	}
-
-	@RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{userId}"}, method = RequestMethod.POST)
-	public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model, @PathVariable Long userId)
-			throws IOException {
-
-		return domainUtils.uploadDocument(fileBucket, result, model, userId);
 	}
 
 	@ExceptionHandler(UserNotFoundException.class)

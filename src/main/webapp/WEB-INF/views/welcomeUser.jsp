@@ -9,7 +9,7 @@
 <c:set var="DELETE_USER_URL" value="<%=UrlMapping.DELETE_USER%>"/>
 <c:set var="ENGLISH_LANG_URL" value="<%=UrlMapping.ENGLISH_LANG%>"/>
 <c:set var="FRENCH_LANG_URL" value="<%=UrlMapping.FRENCH_LANG%>"/>
-<c:set var="TO_MAP_URL" value="<%=UrlMapping.FRENCH_LANG%>"/>
+<c:set var="TO_MAP_URL" value="<%=UrlMapping.TO_MAP%>"/>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -90,6 +90,6 @@
 
 <!-- /container -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="${contextPath}/resources/js/bootstrap.min.js"></script>
+<script src="${contextPath}/js/bootstrap.min.js"></script>
 </body>
 </html>

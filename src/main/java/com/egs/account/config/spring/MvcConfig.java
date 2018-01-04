@@ -7,7 +7,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -17,8 +21,7 @@ import java.util.Locale;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = {"com.egs.account.controller"})
-
+@ComponentScan(basePackages = {"com.egs.account.*"})
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Override
@@ -33,7 +36,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public InternalResourceViewResolver jspViewResolver() {
-		InternalResourceViewResolver bean = new InternalResourceViewResolver();
+		final InternalResourceViewResolver bean = new InternalResourceViewResolver();
 		bean.setPrefix("/WEB-INF/views/");
 		bean.setSuffix(".jsp");
 
@@ -42,15 +45,15 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Bean(name = "multipartResolver")
 	public CommonsMultipartResolver getMultipartResolver() {
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(10240000);
+		final CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+//		resolver.setMaxUploadSize(10240000);
 
 		return resolver;
 	}
 
 	@Bean(name = "messageSource")
 	public MessageSource getMessageSource() {
-		ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
+		final ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
 		resource.setBasenames("classpath:validation", "classpath:messages");
 		resource.setDefaultEncoding("UTF-8");
 
@@ -59,7 +62,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Bean(name = "localeResolver")
 	public AbstractLocaleContextResolver getLocaleResolver() {
-		AbstractLocaleContextResolver resolver = new SessionLocaleResolver();
+		final AbstractLocaleContextResolver resolver = new SessionLocaleResolver();
 		resolver.setDefaultLocale(Locale.ENGLISH);
 
 		return resolver;
@@ -72,8 +75,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public LocaleChangeInterceptor localeInterceptor() {
-		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+		final LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
 		interceptor.setParamName("language");
+
 		return interceptor;
 	}
 

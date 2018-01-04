@@ -1,7 +1,7 @@
 package com.egs.account.controller;
 
-import java.util.List;
-
+import com.egs.account.model.User;
+import com.egs.account.service.user.UserService;
 import com.egs.account.utils.convertor.JsonConvertor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.egs.account.model.User;
-import com.egs.account.service.user.*;
+import java.util.List;
 
 @RestController
 public class UserRestController {
@@ -24,11 +23,11 @@ public class UserRestController {
 
     //-------------------Retrieve All Users--------------------------------------------------------
 
-    @RequestMapping(value = "/user/", method = RequestMethod.GET)
-    public String listAllUsers() {
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public String listAllUsers() {
         String userAsJson = "";
-        List<User> users = userService.findAllUsers();
-        try {
+		final List<User> users = userService.findAllUsers();
+		try {
             userAsJson = JsonConvertor.toJson(users);
         } catch (Exception ex) {
             LOGGER.error("Something went wrong during converting json format");
@@ -41,11 +40,11 @@ public class UserRestController {
 
     //-------------------Retrieve Single User--------------------------------------------------------
 
-    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getUser(@PathVariable("id") Long id) {
+	@RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public String getUser(@PathVariable("id") Long id) {
         String userAsJson = "";
-        User user = userService.findById(id);
-        if (user == null) {
+		final User user = userService.findById(id);
+		if (user == null) {
             LOGGER.info("no user found with id {}", id);
             return null;
         }

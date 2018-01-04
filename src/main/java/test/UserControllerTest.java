@@ -60,21 +60,21 @@ public class UserControllerTest {
 
     @Test
     public void findByUserName() throws Exception {
-        User expectedUser = createUser(1L);
-        Mockito.when(userServiceMock.findByUsername("hmkhiaryan")).thenReturn(expectedUser);
+	    final User expectedUser = createUser(1L);
+	    Mockito.when(userServiceMock.findByUsername("hmkhiaryan")).thenReturn(expectedUser);
     }
 
     @Test
     public void findAll_ShouldAddUserEntriesToList() throws Exception {
-        User userFirst = new User();
-        userFirst.setUsername("hmkhiaryan");
+	    final User userFirst = new User();
+	    userFirst.setUsername("hmkhiaryan");
         userFirst.setEmail("hayk_84@mail.ru");
         userFirst.setFirstName("Hayk");
         userFirst.setLastName("Mkhitaryan");
         userFirst.setId(1L);
 
-        User userSecond = new User();
-        userSecond.setUsername("amkhiaryan");
+	    final User userSecond = new User();
+	    userSecond.setUsername("amkhiaryan");
         userSecond.setEmail("aelita_88@mail.ru");
         userSecond.setFirstName("Aelita");
         userSecond.setLastName("Ghazaryan");
@@ -90,15 +90,15 @@ public class UserControllerTest {
 
     @Test
     public void shouldShowRecentUsers() throws Exception {
-        User expectedUser = createUser(1L);
-        userServiceMock = mock(UserService.class);
+	    final User expectedUser = createUser(1L);
+	    userServiceMock = mock(UserService.class);
         when(userServiceMock.findById(1L)).thenReturn(expectedUser);
     }
 
     private User createUser(Long userId) {
 
-        User user = new User();
-        user.setId(userId);
+	    final User user = new User();
+	    user.setId(userId);
         user.setUsername("hmkhiaryan");
         user.setEmail("hayk_84@mail.ru");
         user.setFirstName("Hayk");

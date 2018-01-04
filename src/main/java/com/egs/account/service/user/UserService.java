@@ -4,16 +4,54 @@ import com.egs.account.model.User;
 
 import java.util.List;
 
+/**
+ * UserService interface with required methods declarations
+ *
+ * @author Hayk_Mkhitaryan
+ */
 public interface UserService {
-    User findById(Long id);
 
-    void saveUser(User user);
+	/**
+	 * Find user by id.
+	 *
+	 * @param id by which user will be found
+	 * @return user found
+	 */
+	User findById(Long id);
 
-    void updateUser(User user);
+	/**
+	 * Save user.
+	 *
+	 * @param user to be saved
+	 */
+	void saveUser(User user);
 
-    User findByUsername(String username);
+	/**
+	 * Update user.
+	 *
+	 * @param user to be updated
+	 */
+	void updateUser(User user);
 
-    void deleteUserById(Long id);
+	/**
+	 * Find user by username.
+	 *
+	 * @param username by which user will be found
+	 * @return user found
+	 */
+	User findByUsername(String username);
 
-    List<User> findAllUsers();
+	/**
+	 * Delete user by id.
+	 *
+	 * @param id by which user will be deleted
+	 */
+	void deleteUserById(Long id);
+
+	/**
+	 * Find all users.
+	 *
+	 * @return users found
+	 */
+	List<User> findAllUsers();
 }

@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Transactional
-public class UserDetailsServiceImpl implements UserDetailsService{
+public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -23,10 +23,12 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	@Override
 	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByUsername(username);
-
-		Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-		for (Role role : user.getRoles()){
+		final User user = userRepository.findByUsername(username);
+		if (user == null) {
+			return null;
+		}
+		final Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+		for (Role role : user.getRoles()) {
 			grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
 		}
 

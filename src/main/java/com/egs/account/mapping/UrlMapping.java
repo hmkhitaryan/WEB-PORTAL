@@ -31,6 +31,12 @@ public class UrlMapping {
 
 	public static final String FRENCH_LANG = "?language=fr";
 
+	public static final String CHECK_EQUALITY = "checkEquality";
+
+	public static final String CHECK_LENGTH = "checkLength";
+
+	public static final String CHECK_EMAIL = "checkEmail";
+
 	//jsp views
 	public static final String LOGIN_DESTINATION_JSP = "login";
 

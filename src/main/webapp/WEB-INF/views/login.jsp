@@ -41,7 +41,7 @@
             <spring:message code="button.loginPage.label"/>
         </h2>
 
-        <div class="form-group ${error != null ? 'has-exception' : ''}">
+        <div class="form-group ${error != null ? 'has-error' : ''}">
             <span>${message}</span>
             <input name="username" type="text" class="form-control" placeholder="Username"
                    autofocus="true"/>

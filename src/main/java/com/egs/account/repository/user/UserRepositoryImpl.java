@@ -50,5 +50,4 @@ public class UserRepositoryImpl extends AbstractDao<Long, User> implements UserR
 	    delete(user);
         LOGGER.info("deleted successfully user with id : {}", user.getId());
     }
-
 }

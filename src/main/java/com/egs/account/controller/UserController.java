@@ -22,12 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,6 +78,38 @@ public class UserController {
 		binder.setValidator(fileValidator);
 	}
 
+	@RequestMapping(value = UrlMapping.LOGIN, method = RequestMethod.GET)
+	public String login(Model model, String error, String logout) {
+		if (error != null) {
+			final String loginError = messageSource.getMessage("userName.password.error", null, null);
+			model.addAttribute(UIAttribute.ERROR, loginError);
+		}
+
+		if (logout != null) {
+			final String logoutError = messageSource.getMessage("logout.error", null, null);
+			model.addAttribute(UIAttribute.MESSAGE, logoutError);
+		}
+
+		return UrlMapping.LOGIN_DESTINATION_JSP;
+	}
+
+	@RequestMapping(value = UrlMapping.TO_MAP, method = RequestMethod.GET)
+	public ModelAndView getPages() {
+		return new ModelAndView(MAP);
+	}
+
+	@RequestMapping(value = UrlMapping.WELCOME, method = RequestMethod.GET)
+	public String welcome(Model model) {
+		final String userName = context.getUserPrincipal().getName();
+		final User userForm = userService.findByUsername(userName);
+		if (userForm == null) {
+			throw new UserNotFoundException(String.format("No user found with this userName %s", userName));
+		}
+		model.addAttribute(UIAttribute.USER_FORM, userForm);
+
+		return UrlMapping.WELCOME_DESTINATION_JSP;
+	}
+
 	@RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.GET)
 	public String registration(Model model) {
 		model.addAttribute(UIAttribute.USER_FORM, new User());
@@ -104,38 +131,8 @@ public class UserController {
 		return UrlMapping.WELCOME_REDIRECT_JSP;
 	}
 
-	@RequestMapping(value = UrlMapping.LOGIN, method = RequestMethod.GET)
-	public String login(Model model, String error, String logout) {
-		if (error != null) {
-			model.addAttribute(UIAttribute.ERROR, "Your username and password is invalid.");
-		}
-
-		if (logout != null) {
-			model.addAttribute(UIAttribute.MESSAGE, "You have been logged out successfully.");
-		}
-
-		return UrlMapping.LOGIN_DESTINATION_JSP;
-	}
-
-	@RequestMapping(value = UrlMapping.TO_MAP, method = RequestMethod.GET)
-	public ModelAndView getPages() {
-		return new ModelAndView(MAP);
-	}
-
-	@RequestMapping(value = {UrlMapping.ROOT, UrlMapping.WELCOME}, method = RequestMethod.GET)
-	public String welcome(Model model) {
-		final String userName = context.getUserPrincipal().getName();
-		final User userForm = userService.findByUsername(userName);
-		if (userForm == null) {
-			throw new UserNotFoundException(String.format("No user found with this userName %s", userName));
-		}
-		model.addAttribute(UIAttribute.USER_FORM, userForm);
-
-		return UrlMapping.WELCOME_DESTINATION_JSP;
-	}
-
 	@RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.GET)
-	public String editUser(@PathVariable Long id, ModelMap model) {
+	public String updateUser(@PathVariable Long id, ModelMap model) {
 		final User user = userService.findById(id);
 		try {
 			if (user.getUsername() != null && !user.getUsername().equals(context.getUserPrincipal().getName())) {

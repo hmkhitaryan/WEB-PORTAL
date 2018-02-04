@@ -15,7 +15,7 @@ public class UIAttribute {
 
 	public static final String DOMAIN = "domain";
 
-	public static final String ERROR = "exception";
+    public static final String ERROR = "error";
 
 	public static final String MESSAGE = "message";
 

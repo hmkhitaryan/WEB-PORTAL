@@ -1,7 +1,5 @@
 package com.egs.account.controller;
 
-import com.egs.account.exception.DocumentNotFoundException;
-import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
@@ -10,9 +8,9 @@ import com.egs.account.model.User;
 import com.egs.account.service.catalog.CatalogService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
+import com.egs.account.service.validator.FileValidationService;
+import com.egs.account.service.validator.UserValidationService;
 import com.egs.account.utils.domainUtils.DomainUtils;
-import com.egs.account.validator.FileValidator;
-import com.egs.account.validator.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
-import static com.egs.account.mapping.UIAttribute.NOT_FOUND;
 
 /**
  * @author Hayk_Mkhitaryan
@@ -39,194 +36,166 @@ import static com.egs.account.mapping.UIAttribute.NOT_FOUND;
 @Controller
 public class UserController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-	private static final String SLASH_SIGN = "/";
+    private static final String SLASH_SIGN = "/";
 
-	private static final String MAP = "map";
+    private static final String MAP = "map";
 
-	@Autowired
-	FileValidator fileValidator;
+    @Autowired
+    FileValidationService fileValidator;
 
-	@Autowired
-	MessageSource messageSource;
+    @Autowired
+    MessageSource messageSource;
 
-	@Autowired
-	DomainUtils domainUtils;
+    @Autowired
+    DomainUtils domainUtils;
 
-	private UserService userService;
+    private UserService userService;
 
-	@Autowired
-	private CatalogService catalogService;
+    @Autowired
+    private CatalogService catalogService;
 
-	@Autowired
-	private SecurityService securityService;
+    @Autowired
+    private SecurityService securityService;
 
-	@Autowired
-	private UserValidator userValidator;
+    @Autowired
+    private UserValidationService userValidator;
 
-	@Autowired
-	private HttpServletRequest context;
+    @Autowired
+    private HttpServletRequest context;
 
-	@Autowired
-	public UserController(UserService userService) {
-		this.userService = userService;
-	}
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
-	@InitBinder("fileBucket")
-	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(fileValidator);
-	}
+    @InitBinder("fileBucket")
+    protected void initBinder(WebDataBinder binder) {
+        binder.setValidator(fileValidator);
+    }
 
-	@RequestMapping(value = UrlMapping.LOGIN, method = RequestMethod.GET)
-	public String login(Model model, String error, String logout) {
-		if (error != null) {
-			final String loginError = messageSource.getMessage("userName.password.error", null, null);
-			model.addAttribute(UIAttribute.ERROR, loginError);
-		}
+    @RequestMapping(value = UrlMapping.LOGIN, method = RequestMethod.GET)
+    public String login(Model model, String error, String logout) {
+        if (error != null) {
+            final String loginError = messageSource.getMessage("userName.password.error", null, null);
+            model.addAttribute(UIAttribute.ERROR, loginError);
+        }
 
-		if (logout != null) {
-			final String logoutError = messageSource.getMessage("logout.error", null, null);
-			model.addAttribute(UIAttribute.MESSAGE, logoutError);
-		}
+        if (logout != null) {
+            final String logoutError = messageSource.getMessage("logout.error", null, null);
+            model.addAttribute(UIAttribute.MESSAGE, logoutError);
+        }
 
-		return UrlMapping.LOGIN_DESTINATION_JSP;
-	}
+        return UrlMapping.LOGIN_DESTINATION_JSP;
+    }
 
-	@RequestMapping(value = UrlMapping.TO_MAP, method = RequestMethod.GET)
-	public ModelAndView getPages() {
-		return new ModelAndView(MAP);
-	}
+    @RequestMapping(value = UrlMapping.TO_MAP, method = RequestMethod.GET)
+    public ModelAndView getPages() {
+        return new ModelAndView(MAP);
+    }
 
-	@RequestMapping(value = UrlMapping.WELCOME, method = RequestMethod.GET)
-	public String welcome(Model model) {
-		final String userName = context.getUserPrincipal().getName();
-		final User userForm = userService.findByUsername(userName);
-		if (userForm == null) {
-			throw new UserNotFoundException(String.format("No user found with this userName %s", userName));
-		}
-		model.addAttribute(UIAttribute.USER_FORM, userForm);
+    @RequestMapping(value = UrlMapping.WELCOME, method = RequestMethod.GET)
+    public String welcome(Model model) {
+        final String userName = context.getUserPrincipal().getName();
+        final User userForm = userService.findByUsername(userName);
+        model.addAttribute(UIAttribute.USER_FORM, userForm);
 
-		return UrlMapping.WELCOME_DESTINATION_JSP;
-	}
+        return UrlMapping.WELCOME_DESTINATION_JSP;
+    }
 
-	@RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.GET)
-	public String registration(Model model) {
-		model.addAttribute(UIAttribute.USER_FORM, new User());
+    @RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.GET)
+    public String createUser(Model model) {
+        model.addAttribute(UIAttribute.USER_FORM, new User());
 
-		return UrlMapping.REGISTRATION_DESTINATION_JSP;
-	}
+        return UrlMapping.REGISTRATION_DESTINATION_JSP;
+    }
 
-	@RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.POST)
-	public String registration(@ModelAttribute(UIAttribute.USER_FORM) User userForm, BindingResult bindingResult) {
-		userValidator.validate(userForm, bindingResult);
+    @RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.POST)
+    public String createUser(@ModelAttribute(UIAttribute.USER_FORM) User userForm, BindingResult bindingResult) {
+        userValidator.validate(userForm, bindingResult);
 
-		if (bindingResult.hasErrors()) {
-			return UrlMapping.REGISTRATION_DESTINATION_JSP;
-		}
-		userService.saveUser(userForm);
-		securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
-		LOGGER.info("user with username {} successfully registered", userForm.getUsername());
+        if (bindingResult.hasErrors()) {
+            return UrlMapping.REGISTRATION_DESTINATION_JSP;
+        }
+        userService.saveUser(userForm);
+        securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
+        LOGGER.info("user with username {} successfully registered", userForm.getUsername());
 
-		return UrlMapping.WELCOME_REDIRECT_JSP;
-	}
+        return UrlMapping.WELCOME_REDIRECT_JSP;
+    }
 
-	@RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.GET)
-	public String updateUser(@PathVariable Long id, ModelMap model) {
-		final User user = userService.findById(id);
-		try {
-			if (user.getUsername() != null && !user.getUsername().equals(context.getUserPrincipal().getName())) {
-				return UrlMapping.LOGIN_DESTINATION_JSP;
-			}
-		} catch (Exception ex) {
-			throw new UserNotFoundException();
-		}
-		model.addAttribute(UIAttribute.USER_FORM, user);
+    @RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.GET)
+    public String updateUser(@PathVariable Long id, ModelMap model) {
+        final User user = userService.findById(id);
+        if (user.getUsername() != null && !user.getUsername().equals(context.getUserPrincipal().getName())) {
+            return UrlMapping.LOGIN_DESTINATION_JSP;
+        }
 
-		return UrlMapping.EDIT_USER_DESTINATION_JSP;
-	}
+        model.addAttribute(UIAttribute.USER_FORM, user);
 
-	@RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.POST)
-	public String updateUser(@Valid User userForm, BindingResult bindingResult, ModelMap model, @PathVariable Long id) {
-		userValidator.validateEdit(userForm, bindingResult);
+        return UrlMapping.EDIT_USER_DESTINATION_JSP;
+    }
 
-		if (bindingResult.hasErrors()) {
-			return UrlMapping.EDIT_USER_REDIRECT_JSP + id;
-		}
-		userService.updateUser(userForm);
-		model.addAttribute(UIAttribute.USER_FORM, userForm);
-		model.addAttribute(UIAttribute.SUCCESS, "User " + userForm.getFirstName() + " " + userForm.getLastName() +
-				" updated successfully");
+    @RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.POST)
+    public String updateUser(@ModelAttribute User userForm, BindingResult bindingResult, ModelMap model,
+                             @PathVariable Long id) {
+        userValidator.validateEdit(userForm, bindingResult);
 
-		return UrlMapping.REGISTRATION_SUCCESS_DESTINATION_JSP;
-	}
+        if (bindingResult.hasErrors()) {
+            return UrlMapping.EDIT_USER_REDIRECT_JSP + "/" + id;
+        }
+        userService.updateUser(userForm);
+        model.addAttribute(UIAttribute.USER_FORM, userForm);
+        model.addAttribute(UIAttribute.SUCCESS, "User " + userForm.getFirstName() + " " + userForm.getLastName() +
+                " updated successfully");
 
-	@RequestMapping(value = {UrlMapping.DELETE_USER + "/{id}"}, method = RequestMethod.GET)
-	public String deleteUser(@PathVariable Long id) {
-		userService.deleteUserById(id);
+        return UrlMapping.REGISTRATION_SUCCESS_DESTINATION_JSP;
+    }
 
-		return UrlMapping.DELETE_SUCCESS_DESTINATION_JSP;
-	}
+    @RequestMapping(value = {UrlMapping.DELETE_USER + "/{id}"}, method = RequestMethod.GET)
+    public String deleteUser(@PathVariable Long id) {
+        userService.deleteUserById(id);
 
-	@RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{id}"}, method = RequestMethod.GET)
-	public String uploadDocument(@PathVariable Long id, ModelMap model) {
-		final User user = userService.findById(id);
-		try {
-			boolean isLoggedInUser = domainUtils.isLoggedInUser(context, user);
-			if (!isLoggedInUser) {
-				return UrlMapping.LOGIN_DESTINATION_JSP;
-			}
-		} catch (Exception ex) {
-			throw new DocumentNotFoundException("No document found with that id or userName");
-		}
-		model.addAttribute(UIAttribute.USER, user);
-		final FileBucket fileModel = new FileBucket();
-		model.addAttribute(UIAttribute.FILE_BUCKET, fileModel);
-		final List<Catalog> documents = catalogService.findAllByUserId(id);
-		model.addAttribute(UIAttribute.DOCUMENTS, documents);
+        return UrlMapping.DELETE_SUCCESS_DESTINATION_JSP;
+    }
 
-		return UrlMapping.MANAGE_DOC_DESTINATION_JSP;
-	}
+    @RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{id}"}, method = RequestMethod.GET)
+    public String uploadDocument(@PathVariable Long id, ModelMap model) {
+        final User user = userService.findById(id);
+        boolean isLoggedInUser = domainUtils.isLoggedInUser(context, user);
+        if (!isLoggedInUser) {
+            return UrlMapping.LOGIN_DESTINATION_JSP;
+        }
 
-	@RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{userId}"}, method = RequestMethod.POST)
-	public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model, @PathVariable Long userId)
-			throws IOException {
+        model.addAttribute(UIAttribute.USER, user);
+        final FileBucket fileModel = new FileBucket();
+        model.addAttribute(UIAttribute.FILE_BUCKET, fileModel);
+        final List<Catalog> documents = catalogService.findAllByUserId(id);
+        model.addAttribute(UIAttribute.DOCUMENTS, documents);
 
-		return domainUtils.uploadDocument(fileBucket, result, model, userId);
-	}
+        return UrlMapping.MANAGE_DOC_DESTINATION_JSP;
+    }
 
-	@RequestMapping(value = {UrlMapping.DOWNLOAD_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
-	public String downloadDocument(@PathVariable Long userId, @PathVariable Long docId, HttpServletResponse response)
-			throws IOException {
-		domainUtils.downloadDocument(response, docId);
+    @RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{userId}"}, method = RequestMethod.POST)
+    public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model,
+                                 @PathVariable Long userId) throws IOException {
 
-		return UrlMapping.ADD_DOC_REDIRECT_JSP + SLASH_SIGN + userId;
-	}
+        return domainUtils.uploadDocument(fileBucket, result, model, userId);
+    }
 
-	@RequestMapping(value = {UrlMapping.DELETE_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
-	public String deleteDocument(@PathVariable Long userId, @PathVariable Long docId) {
-		catalogService.deleteById(docId);
+    @RequestMapping(value = {UrlMapping.DOWNLOAD_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
+    public String downloadDocument(@PathVariable Long userId, @PathVariable Long docId, HttpServletResponse response)
+            throws IOException {
+        domainUtils.downloadDocument(response, docId);
 
-		return UrlMapping.ADD_DOC_REDIRECT_JSP + SLASH_SIGN + userId;
-	}
+        return UrlMapping.ADD_DOC_REDIRECT_JSP + SLASH_SIGN + userId;
+    }
 
-	@ExceptionHandler(UserNotFoundException.class)
-	public ModelAndView handleUserError() {
-		final ModelAndView modelAndView = new ModelAndView();
-		final String domain = messageSource.getMessage("account.user.label", null, null);
-		modelAndView.addObject(UIAttribute.DOMAIN, domain);
-		modelAndView.setViewName(NOT_FOUND);
+    @RequestMapping(value = {UrlMapping.DELETE_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
+    public String deleteDocument(@PathVariable Long userId, @PathVariable Long docId) {
+        catalogService.deleteById(docId);
 
-		return modelAndView;
-	}
-
-	@ExceptionHandler(DocumentNotFoundException.class)
-	public ModelAndView handleDocumentError() {
-		final ModelAndView modelAndView = new ModelAndView();
-		final String domain = messageSource.getMessage("account.document.label", null, null);
-		modelAndView.addObject(UIAttribute.DOMAIN, domain);
-		modelAndView.setViewName(NOT_FOUND);
-
-		return modelAndView;
-	}
+        return UrlMapping.ADD_DOC_REDIRECT_JSP + SLASH_SIGN + userId;
+    }
 }

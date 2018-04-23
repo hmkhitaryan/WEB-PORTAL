@@ -1,5 +1,7 @@
 package com.egs.account.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -36,5 +38,33 @@ public class Role {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Role)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        final Role other = (Role) obj;
+        final EqualsBuilder builder = new EqualsBuilder();
+        builder.append(this.id, other.id);
+        return builder.isEquals();
+    }
+
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", name=" + name + "]";
     }
 }

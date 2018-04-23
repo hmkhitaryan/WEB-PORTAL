@@ -3,7 +3,6 @@ package com.egs.account.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.builder.EqualsBuilder;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
@@ -136,10 +135,7 @@ public class User {
         }
         final User other = (User) obj;
         final EqualsBuilder builder = new EqualsBuilder();
-        builder.append(this.firstName, other.firstName);
-        builder.append(this.lastName, other.lastName);
-        builder.append(this.username, other.username);
-        builder.append(this.skypeID, other.skypeID);
+        builder.append(this.id, other.id);
         return builder.isEquals();
     }
 

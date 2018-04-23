@@ -19,7 +19,7 @@ public class CatalogServiceImpl implements CatalogService {
     CatalogRepository catalogRepository;
 
     public Catalog findById(Long id) {
-        return catalogRepository.findById(id);
+        return catalogRepository.findOne(id);
     }
 
     public List<Catalog> findAll() {
@@ -33,6 +33,6 @@ public class CatalogServiceImpl implements CatalogService {
     public void saveDocument(Catalog catalog){ catalogRepository.save(catalog); }
 
     public void deleteById(Long id){
-        catalogRepository.deleteById(id);
+        catalogRepository.delete(id);
     }
 }

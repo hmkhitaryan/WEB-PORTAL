@@ -14,6 +14,7 @@
 		<spring-data-jpa.version>1.8.2.RELEASE</spring-data-jpa.version>
 		<hibernate.version>4.3.10.Final</hibernate.version>
 		<hibernate-validator.version>5.2.1.Final</hibernate-validator.version>
+		<elasticsearch.version>3.0.6.RELEASE</elasticsearch.version>
 		<mysql-connector.version>5.1.36</mysql-connector.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<jstl.version>1.2</jstl.version>
@@ -60,18 +61,8 @@
         <!--hibernate-->
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate-validator.version}</version>
         </dependency>
 
         <!--mysql-->
@@ -114,7 +105,6 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
         </dependency>
-
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>

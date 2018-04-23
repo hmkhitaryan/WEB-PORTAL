@@ -3,6 +3,7 @@ package com.egs.account.service.user;
 import com.egs.account.model.User;
 import com.egs.account.repository.role.RoleRepository;
 import com.egs.account.repository.user.UserRepository;
+import com.egs.account.utils.domainUtils.DomainUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,20 @@ import java.util.List;
 @Service("userService")
 @Transactional
 public class UserServiceImpl implements UserService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private RoleRepository roleRepository;
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private DomainUtils domainUtils;
 
     @Override
     public void saveUser(User user) {
@@ -36,62 +43,70 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) { return userRepository.findByUsername(username); }
+    public User findByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+//        domainUtils.handleNotFoundError(user, User.class, username);
 
-	/**
-	 * Find all users.
-	 *
-	 * @return list of user
-	 */
-	public List<User> findAllUsers() {
-		return userRepository.findAllUsers();
-	}
+        return user;
+    }
 
-	/**
-	 * Find user by id.
-	 *
-	 * @return user found
-	 */
-	public User findById(Long Id) {
-		return userRepository.findById(Id);
-	}
+    /**
+     * Find all users.
+     *
+     * @return list of user
+     */
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
 
-	/**
-	 * Update user info.
-	 *
-	 * @param user user Whose info will be updated
-	 */
-	public void updateUser(User user) {
-		final User entity = userRepository.findById(user.getId());
-		if (entity != null) {
-			updateUserInfo(entity, user);
-			userRepository.save(entity);
-			LOGGER.info("user with id {} successfully updated", user.getId());
-		}
-	}
+    /**
+     * Find user by id.
+     *
+     * @return user found
+     */
+    public User findById(Long id) {
+        User user = userRepository.findOne(id);
+        domainUtils.handleNotFoundError(user, User.class, id);
 
-	/**
-	 * Update user info.
-	 *
-	 * @param u1 user whose info will be updated
-	 * @param u2 whose info will be used
-	 */
-	private void updateUserInfo(User u1, User u2) {
-		u1.setFirstName(u2.getFirstName());
-		u1.setLastName(u2.getLastName());
-		u1.setEmail(u2.getEmail());
-		u1.setSkypeID(u2.getSkypeID());
-		u1.setDateRegistered(new Date());
-		u1.setPassword(bCryptPasswordEncoder.encode(u2.getPassword()));
-	}
+        return user;
+    }
 
-	/**
-	 * Delete user by id.
-	 *
-	 * @param id by which user will be deleted
-	 */
-	public void deleteUserById(Long id) {
-		userRepository.deleteById(id);
-		LOGGER.info("user with id {} successfully deleted", id);
-	}
+    /**
+     * Update user info.
+     *
+     * @param user user Whose info will be updated
+     */
+    public void updateUser(User user) {
+        Long id = user.getId();
+        final User entity = userRepository.findOne(id);
+        domainUtils.handleNotFoundError(entity, User.class, id);
+        updateUserInfo(entity, user);
+        userRepository.save(entity);
+        LOGGER.info("user with id {} successfully updated", user.getId());
+    }
+
+    /**
+     * Update user info.
+     *
+     * @param u1 user whose info will be updated
+     * @param u2 whose info will be used
+     */
+    private void updateUserInfo(User u1, User u2) {
+        u1.setFirstName(u2.getFirstName());
+        u1.setLastName(u2.getLastName());
+        u1.setEmail(u2.getEmail());
+        u1.setSkypeID(u2.getSkypeID());
+        u1.setDateRegistered(new Date());
+        u1.setPassword(bCryptPasswordEncoder.encode(u2.getPassword()));
+    }
+
+    /**
+     * Delete user by id.
+     *
+     * @param id by which user will be deleted
+     */
+    public void deleteUserById(Long id) {
+        userRepository.delete(id);
+        LOGGER.info("user with id {} successfully deleted", id);
+    }
 }

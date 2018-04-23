@@ -1,7 +1,7 @@
 package test;
 
-
-import com.egs.account.config.hibernate.HibernateConfiguration;
+import com.egs.account.config.data.jpa.JpaConfig;
+import com.egs.account.config.spring.security.SecurityConfiguration;
 import com.egs.account.controller.UserController;
 import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.model.User;
@@ -28,9 +28,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 
-@ContextConfiguration(locations = {
-        "classpath:/appconfig-security.xml"},
-        classes = {HibernateConfiguration.class})
+@ContextConfiguration(
+        classes = {JpaConfig.class, SecurityConfiguration.class})
 @WebAppConfiguration
 @RunWith(MockitoJUnitRunner.class)
 public class UserControllerTest {
@@ -50,7 +49,8 @@ public class UserControllerTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        this.mockMvc = standaloneSetup(controller).setSingleView(new InternalResourceView("/WEB-INF/views/welcomeUser.jsp")).build();;
+        this.mockMvc = standaloneSetup(controller).setSingleView(new InternalResourceView("/WEB-INF/views/welcomeUser.jsp")).build();
+        ;
     }
 
     @Test(expected = AuthenticationException.class)
@@ -60,21 +60,21 @@ public class UserControllerTest {
 
     @Test
     public void findByUserName() throws Exception {
-	    final User expectedUser = createUser(1L);
-	    Mockito.when(userServiceMock.findByUsername("hmkhiaryan")).thenReturn(expectedUser);
+        final User expectedUser = createUser(1L);
+        Mockito.when(userServiceMock.findByUsername("hmkhiaryan")).thenReturn(expectedUser);
     }
 
     @Test
     public void findAll_ShouldAddUserEntriesToList() throws Exception {
-	    final User userFirst = new User();
-	    userFirst.setUsername("hmkhiaryan");
+        final User userFirst = new User();
+        userFirst.setUsername("hmkhiaryan");
         userFirst.setEmail("hayk_84@mail.ru");
         userFirst.setFirstName("Hayk");
         userFirst.setLastName("Mkhitaryan");
         userFirst.setId(1L);
 
-	    final User userSecond = new User();
-	    userSecond.setUsername("amkhiaryan");
+        final User userSecond = new User();
+        userSecond.setUsername("amkhiaryan");
         userSecond.setEmail("aelita_88@mail.ru");
         userSecond.setFirstName("Aelita");
         userSecond.setLastName("Ghazaryan");
@@ -90,15 +90,15 @@ public class UserControllerTest {
 
     @Test
     public void shouldShowRecentUsers() throws Exception {
-	    final User expectedUser = createUser(1L);
-	    userServiceMock = mock(UserService.class);
+        final User expectedUser = createUser(1L);
+        userServiceMock = mock(UserService.class);
         when(userServiceMock.findById(1L)).thenReturn(expectedUser);
     }
 
     private User createUser(Long userId) {
 
-	    final User user = new User();
-	    user.setId(userId);
+        final User user = new User();
+        user.setId(userId);
         user.setUsername("hmkhiaryan");
         user.setEmail("hayk_84@mail.ru");
         user.setFirstName("Hayk");

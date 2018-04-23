@@ -5,9 +5,9 @@ package com.egs.account.ajax;
  */
 public class JsonResponse {
 
-	private String status = null;
+	private String status;
 
-	private Object result = null;
+	private Object result;
 
 	public String getStatus() {
 		return status;
@@ -24,5 +24,4 @@ public class JsonResponse {
 	public void setResult(Object result) {
 		this.result = result;
 	}
-
 }
